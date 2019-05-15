@@ -1,0 +1,12 @@
+Based on the examples presented until this point, you might as well be familiar with the general programming pattern in CUDA. If you are not familiar with general programming paradigm in CUDA, following are the major steps involved:
+1. The program should identify your data that you want to work on. These are the operands. For the vector addition problem in hello world [link here], the operand were two arrays. Similarly for reduction problem [link here], the vector named myVec as the operand while the two matrices were the operand.
+2. The program should allocate memory in the device or GPU using cudaMalloc(...) function so that the program has a pointer in the memory space of device.
+3. The program should copy the input operand to the memory space of the device using the pointer above using cudaMemcpy(...) function.
+4. The program should create a pointer for result of the operation in GPU. Pointers should be for both CPU space and GPU space. For example: in the vector addition example [link here], the pointer C is in CPU memory space while dC is in GPU memory space.
+5. The program should launch the kernel (which is a GPU function) with appropriate number of blocks and threads.
+6. The program should copy the result from the GPU memory to CPU memory using cudaMemcpy(...) function. For example, after the kernel call in vector add example [link here], a call to cudaMemcpy is made to copy dC to C in CPU memory.
+7. The program should free the memory in GPU.
+8. The program should perform operation on the result obtained as necessary.
+9. Finish the program.
+
+In this post, we will see a slightly miodified version of matrix multiplication example. The previous example of matrix multiplication example [link here] was a simple implementation in the sense that the problem of matrix multiplication is modeled as a dot-product of rows of first matrix and columns of second matrix. This is the basics of matrix multiplication everywhere. But in GPU and using CUDA we can do better by making proper use of memory and locality. We will see the example in this post below. 
