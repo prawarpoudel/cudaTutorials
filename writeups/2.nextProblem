@@ -1,5 +1,5 @@
 Based on the examples presented until this point, you might as well be familiar with the general programming pattern in CUDA. If you are not familiar with general programming paradigm in CUDA, following are the major steps involved:
-1. The program should identify your data that you want to work on. These are the operands. For the vector addition problem in hello world [link here], the operand were two arrays. Similarly for reduction problem [link here], the vector named myVec as the operand while the two matrices were the operand.
+1. The program should identify data that you want to work on. These are the operands. For the vector addition problem in hello world [link here], the operand were two arrays. Similarly for reduction problem [link here], the vector named myVec as the operand while the two matrices were the operand.
 2. The program should allocate memory in the device or GPU using cudaMalloc(...) function so that the program has a pointer in the memory space of device.
 3. The program should copy the input operand to the memory space of the device using the pointer above using cudaMemcpy(...) function.
 4. The program should create a pointer for result of the operation in GPU. Pointers should be for both CPU space and GPU space. For example: in the vector addition example [link here], the pointer C is in CPU memory space while dC is in GPU memory space.
@@ -10,3 +10,15 @@ Based on the examples presented until this point, you might as well be familiar 
 9. Finish the program.
 
 In this post, we will see a slightly miodified version of matrix multiplication example. The previous example of matrix multiplication example [link here] was a simple implementation in the sense that the problem of matrix multiplication is modeled as a dot-product of rows of first matrix and columns of second matrix. This is the basics of matrix multiplication everywhere. But in GPU and using CUDA we can do better by making proper use of memory and locality. We will see the example in this post below. 
+
+In the previous matrix multiplication kernel as shown in the image below, we used two loops. 
+<<image here>>.
+
+Two nested loops in cuda kernel for problem like this is never a good idea. So we will try to implement the same problem with a single for loop in this example. In the next post, we will use the concept of tiling and present the code.
+
+The newer code is presented in the image below. The complete code can be found here [Link Here]. 
+<<image here>>
+
+In this solution to the same problem, we used a slightly different approach such that the grid we launch has one block. This block however will have dimension of (number of rows in first matrix)X(number of columns in second matrix). This is to make it easier to map the thought process of ours to the problem we are solving. This makes it easier to think of a thread as computing a single element in the output matrix.
+In the code above, we can see that the index of thread in the grid launched is found is given in variable idx. The variable idx is also the row-major indexed element in the result matrix that we want to compute.
+This is not the most optimized code that we can create for matrix multiplication, rather we will use more complex concept of tiling and using shared memory in the next post. [link Here]
