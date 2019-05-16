@@ -41,6 +41,22 @@ void multiplyMatrix(int* matA,int* matB,int* resultMat,int rowA,int rowB,int col
 	}
 }
 
+void multiplyMatrixSerial(int* matA, int* matB, int* resultMat, int rowA, int rowB, int colB)
+{
+	for (int i = 0; i<rowA; i++)
+	{
+		for (int j = 0; j<colB; j++)
+		{
+			int sum = 0;
+			for (int k = 0; k<rowB; k++)
+			{
+				sum += (matA[i*rowB + k] * matB[k*colB + j]);
+			}
+			resultMat[i*colB + j] = sum;
+		}
+	}
+}
+
 int main()
 {
 	int rowA = 3;
@@ -72,13 +88,18 @@ int main()
 	cout<<"MatrixB: "<<endl;
 	printMatrix(matB,rowB,colB);
 
+	//each thread will compute a row of elements in result matrix
 	multiplyMatrix <<<1,rowA>>> (dA,dB,dC,rowA,rowB,colB);
 
 	//copy result from device to host
 	cudaMemcpy(matC,dC,rowA*colB*sizeof(int),cudaMemcpyDeviceToHost);
 
-	cout<<"The result matrix is: "<<endl;
+	cout<<"The parallel result matrix is: "<<endl;
 	printMatrix(matC,rowA,colB);
+
+	multiplyMatrixSerial(matA,matB,matC,rowA,rowB,colB);
+	cout << "The serial result matrix is: " << endl;
+	printMatrix(matC, rowA, colB);
 
 	cudaFree(dA);
 	cudaFree(dB);
